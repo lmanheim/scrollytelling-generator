@@ -49,26 +49,6 @@ brew install --cask libreoffice
 sudo apt install libreoffice
 ```
 
-## How it works
-
-The skill converts presenter-format content (slides + speaker notes) into reader-format content (scrollytelling). Speaker notes become editorial prose. Slides become visual beats with layouts chosen for their narrative function, not just their visual appearance.
-
-Nine beat types form the layout vocabulary:
-
-| Beat type | Function |
-|---|---|
-| text-only | Narrative weight — synthesis, reveals, connective tissue |
-| dramatic | Maximum typographic impact for a single statement |
-| brief | Short transitional pause between bigger beats |
-| slide | Full-screen — the image is the entire experience |
-| cinematic | Full-bleed immersive moment, emotional not informational |
-| crossfade | Scroll-driven transition between two related slides |
-| triptych | Three parallel examples displayed as a set |
-| split-side | Image and editorial text side by side |
-| stacked | Full-width image on top, editorial text below |
-
-The storyboard phase is where the editorial decisions happen — which slides to feature, what to say about them, how to pace the sequence. The build phase is mechanical: a Python script reads the storyboard's JSON and assembles the final HTML.
-
 ## Project structure
 
 ```
