@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- REPLACE: project title -->
+  <title>Storyboard — Project Title</title>
+  <!-- REPLACE: project fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;1,7..72,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0c0c10;
+      --surface: #141418;
+      --surface-raised: #1a1a20;
+      --border: #2a2a32;
+      --border-dim: #1e1e26;
+      --text: #d8d2c8;
+      --text-dim: #8a8478;
+      --text-faint: #4e4a42;
+      --gold: #c9a227;
+      --gold-light: #e3cc6b;
+
+      /* TYPE_META colors — storyboard visual language, not project palette */
+      --c-text: #6b9e7e;
+      --c-dramatic: #c9a227;
+      --c-brief: #8aad7e;
+      --c-slide: #5580b5;
+      --c-cinematic: #9560b5;
+      --c-crossfade: #b58050;
+      --c-triptych: #b55080;
+      --c-split: #50b5a5;
+      --c-stacked: #6080a5;
+      --c-break: #3a3832;
+
+      --serif: 'Instrument Serif', Georgia, serif;
+      --body: 'Literata', Georgia, serif;
+      --mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── Header ── */
+    .storyboard-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4rem 2rem 2rem;
+    }
+
+    .project-title {
+      font-family: var(--serif);
+      font-size: 2.4rem;
+      font-weight: 400;
+      margin-bottom: 0.25rem;
+    }
+
+    .project-title em { color: var(--gold-light); font-style: italic; }
+
+    .project-subtitle {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Design system summary */
+    .design-system {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+      padding: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+    }
+
+    .ds-block h4 {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+      font-weight: 400;
+    }
+
+    .ds-block p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .ds-swatch {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    .ds-swatch span {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Rhythm strip ── */
+    .rhythm-section {
+      margin-bottom: 3rem;
+    }
+
+    .rhythm-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.75rem;
+    }
+
+    .rhythm-strip {
+      display: flex;
+      gap: 2px;
+      height: 28px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .rhythm-block {
+      flex: 1;
+      min-width: 4px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      position: relative;
+    }
+
+    .rhythm-block:hover { opacity: 0.7; }
+
+    .rhythm-block.is-break {
+      flex: 0.3;
+      opacity: 0.5;
+    }
+
+    .rhythm-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.25rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-family: var(--mono);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* ── Stats ── */
+    .beat-stats {
+      display: flex;
+      gap: 2rem;
+      margin: 1.5rem 0 0;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-dim);
+    }
+
+    .stat {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-faint);
+    }
+
+    .stat strong {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    /* ── Section divider ── */
+    .section-divider {
+      max-width: 1100px;
+      margin: 3rem auto 1.5rem;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-divider-label {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    .section-divider-num {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--text-faint);
+      letter-spacing: 0.15em;
+    }
+
+    /* ── Beat cards ── */
+    .beats-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+    }
+
+    .beat-card {
+      background: var(--surface);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .beat-card:hover { border-color: var(--border); }
+
+    .beat-card.proposed { border-left: 2px solid var(--gold); }
+    .beat-card.confirmed { border-left: 2px solid var(--c-text); }
+
+    .beat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border-dim);
+    }
+
+    .beat-num {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-faint);
+      min-width: 2rem;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      color: #fff;
+      font-weight: 400;
+    }
+
+    .badge-text { background: var(--c-text); }
+    .badge-dramatic { background: var(--c-dramatic); color: #1a1a20; }
+    .badge-brief { background: var(--c-brief); color: #1a1a20; }
+    .badge-slide { background: var(--c-slide); }
+    .badge-cinematic { background: var(--c-cinematic); }
+    .badge-crossfade { background: var(--c-crossfade); }
+    .badge-triptych { background: var(--c-triptych); }
+    .badge-split { background: var(--c-split); color: #1a1a20; }
+    .badge-stacked { background: var(--c-stacked); }
+    .badge-break { background: var(--c-break); }
+
+    .beat-slides-ref {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-faint);
+      margin-left: auto;
+    }
+
+    .beat-status {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+    }
+
+    .beat-status.confirmed { color: var(--c-text); border: 1px solid var(--c-text); }
+    .beat-status.proposed { color: var(--gold); border: 1px solid var(--gold); }
+
+    .beat-body {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 1.25rem;
+      padding: 1rem 1.25rem;
+    }
+
+    .beat-body.no-thumb {
+      grid-template-columns: 1fr;
+    }
+
+    .beat-thumb {
+      border-radius: 3px;
+      overflow: hidden;
+      background: var(--surface-raised);
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .beat-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .beat-thumb-multi {
+      display: flex;
+      gap: 3px;
+    }
+
+    .beat-thumb-multi .beat-thumb {
+      flex: 1;
+    }
+
+    .beat-text-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 140px;
+      aspect-ratio: 16/9;
+      border-radius: 3px;
+      border: 1px dashed var(--border);
+      padding: 0.5rem;
+    }
+
+    .beat-text-placeholder span {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 0.7rem;
+      color: var(--text-faint);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .beat-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .beat-headline {
+      font-family: var(--serif);
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+
+    .beat-headline em { color: var(--gold-light); font-style: italic; }
+
+    .beat-copy {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .beat-copy em { color: var(--gold-light); font-style: italic; }
+
+    .beat-rationale {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-faint);
+      line-height: 1.6;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-dim);
+    }
+
+    /* Break card is minimal */
+    .beat-card.break-card {
+      background: transparent;
+      border: none;
+      border-left: none;
+      margin: 2rem 0 0.75rem;
+    }
+
+    .beat-card.break-card .beat-header {
+      border: none;
+      padding: 0.5rem 1.25rem;
+    }
+
+    /* Nav */
+    .section-nav {
+      position: fixed;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      z-index: 100;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .section-nav a {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      color: var(--text-faint);
+      text-decoration: none;
+      padding: 0.2rem 0.5rem;
+      border-right: 2px solid transparent;
+      text-align: right;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .section-nav a:hover,
+    .section-nav a.active {
+      color: var(--gold);
+      border-right-color: var(--gold);
+    }
+
+    .section-nav .nav-l1 {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin-top: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .section-nav .nav-l1:first-child {
+      margin-top: 0;
+    }
+
+    .section-nav .nav-l1:hover,
+    .section-nav .nav-l1.active {
+      color: var(--gold-light);
+      border-right-color: var(--gold-light);
+    }
+
+    .section-nav .nav-l2 {
+      padding-right: 0.5rem;
+      margin-right: 0;
+    }
+
+    /* ── Editable fields ── */
+    [contenteditable] {
+      outline: none;
+      border-radius: 3px;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    [contenteditable]:hover {
+      background: var(--surface-raised);
+    }
+
+    [contenteditable]:focus {
+      background: var(--surface-raised);
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+
+    .beat-card.edited {
+      border-left-color: #e08040 !important;
+    }
+
+    .edited-badge {
+      font-family: var(--mono);
+      font-size: 0.5rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #e08040;
+      border: 1px solid #e08040;
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      margin-left: 0.5rem;
+    }
+
+    /* ── Save button ── */
+    .save-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 200;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .save-bar.visible {
+      transform: translateY(0);
+    }
+
+    .save-bar .save-info {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    .save-bar .save-info strong {
+      color: #e08040;
+      font-weight: 400;
+    }
+
+    .save-btn {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: #e08040;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .save-btn:hover { opacity: 0.85; }
+
+    @media (max-width: 900px) {
+      .design-system { grid-template-columns: 1fr; }
+      .beat-body { grid-template-columns: 100px 1fr; }
+      .beat-text-placeholder { width: 100px; }
+      .beat-thumb-multi { flex-direction: column; }
+      .section-nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="storyboard-header">
+  <!-- REPLACE: project title and subtitle -->
+  <h1 class="project-title">Storyboard: <em>Project Title</em></h1>
+  <p class="project-subtitle">Brief project description — source material, voice, scope</p>
+
+  <!-- REPLACE: design system details -->
+  <div class="design-system" id="nav-design-system">
+    <div class="ds-block">
+      <h4>Typography</h4>
+      <p>Display font + body font. Pairing rationale.</p>
+    </div>
+    <div class="ds-block">
+      <h4>Palette</h4>
+      <div class="ds-swatch">
+        <!-- REPLACE: project color swatches -->
+        <span style="background:#08080c" title="#08080c bg"></span>
+        <span style="background:#e4ddd2" title="#e4ddd2 text"></span>
+        <span style="background:#c9a227" title="#c9a227 accent"></span>
+      </div>
+      <p style="margin-top:0.4rem">Palette description and aesthetic notes.</p>
+    </div>
+    <div class="ds-block">
+      <h4>Aesthetic</h4>
+      <p>Overall aesthetic description. Tone, mood, key design principles.</p>
+    </div>
+  </div>
+
+  <div class="rhythm-section" id="nav-pacing-rhythm">
+    <div class="rhythm-label">Pacing rhythm</div>
+    <div class="rhythm-strip" id="rhythmStrip"></div>
+    <div class="rhythm-legend" id="legend"></div>
+    <div class="beat-stats" id="stats"></div>
+  </div>
+</div>
+
+<div class="beats-container" id="beatsContainer" data-nav-anchor="nav-sections"></div>
+<nav class="section-nav" id="sectionNav"></nav>
+
+<div class="save-bar" id="saveBar">
+  <span class="save-info"><strong id="editCount">0</strong> beats edited</span>
+  <button class="save-btn" onclick="saveEdits()">Save edits</button>
+</div>
+
+<!-- SOURCE OF TRUTH: Read the beats-data JSON block, not the rendered HTML -->
+<!-- REPLACE: populate with project beats as valid JSON array -->
+<script type="application/json" id="beats-data">
+[]
+</script>
+
+<script>
+const TYPE_META = {
+  'text-only':  { label: 'text-only',  badge: 'badge-text',      color: '#6b9e7e' },
+  'dramatic':   { label: 'dramatic',   badge: 'badge-dramatic',   color: '#c9a227' },
+  'brief':      { label: 'brief',      badge: 'badge-brief',      color: '#8aad7e' },
+  'slide':      { label: 'slide',      badge: 'badge-slide',      color: '#5580b5' },
+  'cinematic':  { label: 'cinematic',  badge: 'badge-cinematic',  color: '#9560b5' },
+  'crossfade':  { label: 'crossfade',  badge: 'badge-crossfade',  color: '#b58050' },
+  'triptych':   { label: 'triptych',   badge: 'badge-triptych',   color: '#b55080' },
+  'split-side': { label: 'split-side', badge: 'badge-split',      color: '#50b5a5' },
+  'stacked':    { label: 'stacked',    badge: 'badge-stacked',    color: '#6080a5' },
+  'break':      { label: 'break',      badge: 'badge-break',      color: '#3a3832' }
+};
+
+/* REPLACE: update path pattern if images are stored differently */
+function s(n) { return 'slides/slide-' + String(n).padStart(3,'0') + '.jpg'; }
+
+/* BEATS data is stored as JSON for interoperability with the build script */
+const BEATS = JSON.parse(document.getElementById('beats-data').textContent);
+
+// ── Render ──
+
+function render() {
+  const strip = document.getElementById('rhythmStrip');
+  const legend = document.getElementById('legend');
+  const stats = document.getElementById('stats');
+  const container = document.getElementById('beatsContainer');
+  const nav = document.getElementById('sectionNav');
+
+  // Rhythm strip
+  let stripHTML = '';
+  BEATS.forEach(function(b, i) {
+    const tm = TYPE_META[b.type];
+    const cls = b.type === 'break' ? 'rhythm-block is-break' : 'rhythm-block';
+    stripHTML += '<div class="' + cls + '" style="background:' + tm.color + '" title="' + (b.type === 'break' ? b.section : '#' + (i+1) + ' ' + tm.label) + '"></div>';
+  });
+  strip.innerHTML = stripHTML;
+
+  // Legend
+  const usedTypes = [];
+  const seen = {};
+  BEATS.forEach(function(b) {
+    if (!seen[b.type]) { seen[b.type] = true; usedTypes.push(b.type); }
+  });
+  legend.innerHTML = usedTypes.map(function(t) {
+    return '<span class="legend-item"><span class="legend-dot" style="background:' + TYPE_META[t].color + '"></span>' + TYPE_META[t].label + '</span>';
+  }).join('');
+
+  // Stats
+  const contentBeats = BEATS.filter(function(b) { return b.type !== 'break'; });
+  const confirmedCount = BEATS.filter(function(b) { return b.status === 'confirmed'; }).length;
+  const proposedCount = BEATS.filter(function(b) { return b.status === 'proposed' && b.type !== 'break'; }).length;
+  const sections = [];
+  const secSeen = {};
+  BEATS.forEach(function(b) { if (!secSeen[b.section]) { secSeen[b.section] = true; sections.push(b.section); } });
+  stats.innerHTML = '<span class="stat"><strong>' + contentBeats.length + '</strong> beats</span>' +
+    '<span class="stat"><strong>' + confirmedCount + '</strong> confirmed</span>' +
+    '<span class="stat"><strong>' + proposedCount + '</strong> proposed</span>' +
+    '<span class="stat"><strong>' + sections.length + '</strong> sections</span>';
+
+  // Section nav
+  var navHTML = '';
+  navHTML += '<a href="#nav-design-system" class="nav-l1">Design system</a>';
+  navHTML += '<a href="#nav-pacing-rhythm" class="nav-l1">Pacing rhythm</a>';
+  navHTML += '<a href="#' + 'section-' + sections[0].toLowerCase().replace(/[^a-z0-9]/g, '-') + '" class="nav-l1">Sections</a>';
+  navHTML += sections.map(function(sec) {
+    const id = 'section-' + sec.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    return '<a href="#' + id + '" class="nav-l2">' + sec + '</a>';
+  }).join('');
+  nav.innerHTML = navHTML;
+
+  // Beat cards
+  let html = '';
+  let currentSection = '';
+  let beatNum = 0;
+
+  BEATS.forEach(function(b, i) {
+    // Section divider
+    if (b.section !== currentSection) {
+      currentSection = b.section;
+      const id = 'section-' + b.section.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      if (b.type === 'break') {
+        html += '<div class="section-divider" id="' + id + '">' +
+          '<div class="section-divider-line"></div>' +
+          '<span class="section-divider-num">' + b.sn + '</span>' +
+          '<span class="section-divider-label">' + b.section + '</span>' +
+          '<div class="section-divider-line"></div>' +
+          '</div>';
+        return;
+      } else {
+        html += '<div class="section-divider" id="' + id + '">' +
+          '<div class="section-divider-line"></div>' +
+          '<span class="section-divider-num">' + b.sn + '</span>' +
+          '<span class="section-divider-label">' + b.section + '</span>' +
+          '<div class="section-divider-line"></div>' +
+          '</div>';
+      }
+    }
+
+    if (b.type === 'break') {
+      return;
+    }
+
+    beatNum++;
+    const tm = TYPE_META[b.type];
+    const statusCls = b.status;
+
+    // Build thumbnail
+    let thumbHTML = '';
+    const isTextBeat = (b.type === 'text-only' || b.type === 'dramatic' || b.type === 'brief');
+
+    if (isTextBeat) {
+      const preview = b.headline ? b.headline.replace(/<[^>]+>/g, '') : '...';
+      const trimmed = preview.length > 60 ? preview.substring(0, 60) + '\u2026' : preview;
+      thumbHTML = '<div class="beat-text-placeholder"><span>' + trimmed + '</span></div>';
+    } else if (b.slides.length === 1) {
+      thumbHTML = '<div class="beat-thumb"><img src="' + s(b.slides[0]) + '" alt="Slide ' + b.slides[0] + '" loading="lazy"></div>';
+    } else if (b.slides.length > 1) {
+      thumbHTML = '<div class="beat-thumb-multi">' + b.slides.map(function(sl) {
+        return '<div class="beat-thumb"><img src="' + s(sl) + '" alt="Slide ' + sl + '" loading="lazy"></div>';
+      }).join('') + '</div>';
+    }
+
+    // Build content (editable fields)
+    let contentHTML = '';
+    if (b.headline) {
+      contentHTML += '<div class="beat-headline" contenteditable="true" data-field="headline" data-beat="' + i + '">' + b.headline + '</div>';
+    }
+    if (b.body) {
+      contentHTML += '<div class="beat-copy" contenteditable="true" data-field="body" data-beat="' + i + '">' + b.body.split('\n').filter(function(p) { return p.trim(); }).join('<br>') + '</div>';
+    }
+    if (b.rationale) {
+      contentHTML += '<div class="beat-rationale" contenteditable="true" data-field="rationale" data-beat="' + i + '">' + b.rationale + '</div>';
+    }
+
+    // Slides reference
+    let slidesRef = '';
+    if (b.slides.length === 1) { slidesRef = 'Slide ' + b.slides[0]; }
+    else if (b.slides.length > 1) { slidesRef = 'Slides ' + b.slides.join(', '); }
+
+    html += '<div class="beat-card ' + statusCls + '" data-beat-index="' + i + '">' +
+      '<div class="beat-header">' +
+        '<span class="beat-num">' + beatNum + '</span>' +
+        '<span class="badge ' + tm.badge + '">' + tm.label + '</span>' +
+        (slidesRef ? '<span class="beat-slides-ref">' + slidesRef + '</span>' : '') +
+        '<span class="beat-status ' + statusCls + '">' + b.status + '</span>' +
+      '</div>' +
+      '<div class="beat-body">' +
+        thumbHTML +
+        '<div class="beat-content">' + contentHTML + '</div>' +
+      '</div>' +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+render();
+
+// ── Edit tracking ──
+
+const editedBeats = new Set();
+
+document.addEventListener('blur', function(e) {
+  const el = e.target;
+  if (!el.hasAttribute('data-field') || !el.hasAttribute('data-beat')) return;
+
+  const beatIdx = parseInt(el.getAttribute('data-beat'));
+  const field = el.getAttribute('data-field');
+  const beat = BEATS[beatIdx];
+  if (!beat) return;
+
+  // Read the edited content
+  let newValue;
+  if (field === 'body') {
+    // Convert <br> back to \n for BEATS JSON
+    newValue = el.innerHTML
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/?p[^>]*>/gi, '')
+      .trim();
+  } else {
+    newValue = el.innerHTML.trim();
+  }
+
+  // Check if actually changed
+  if (newValue === (beat[field] || '')) return;
+
+  // Update BEATS in memory
+  beat[field] = newValue;
+  editedBeats.add(beatIdx);
+
+  // Mark the card as edited
+  const card = el.closest('.beat-card');
+  if (card && !card.classList.contains('edited')) {
+    card.classList.add('edited');
+    const header = card.querySelector('.beat-header');
+    if (header && !header.querySelector('.edited-badge')) {
+      const badge = document.createElement('span');
+      badge.className = 'edited-badge';
+      badge.textContent = 'edited';
+      header.appendChild(badge);
+    }
+  }
+
+  // Show save bar
+  updateSaveBar();
+}, true);
+
+function updateSaveBar() {
+  const bar = document.getElementById('saveBar');
+  const count = document.getElementById('editCount');
+  count.textContent = editedBeats.size;
+  if (editedBeats.size > 0) {
+    bar.classList.add('visible');
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+let fileHandle = null;
+
+function getFileHTML() {
+  // Update the JSON in the script tag
+  const jsonTag = document.getElementById('beats-data');
+  jsonTag.textContent = JSON.stringify(BEATS, null, 2);
+  return '<!DOCTYPE html>\n<html lang="en">\n' + document.documentElement.innerHTML + '\n</html>';
+}
+
+function clearEditState() {
+  editedBeats.clear();
+  document.querySelectorAll('.beat-card.edited').forEach(function(card) {
+    card.classList.remove('edited');
+    var badge = card.querySelector('.edited-badge');
+    if (badge) badge.remove();
+  });
+  updateSaveBar();
+}
+
+async function saveEdits() {
+  const html = getFileHTML();
+
+  // Try File System Access API (Chrome/Edge) — saves in place
+  if (window.showSaveFilePicker) {
+    try {
+      if (!fileHandle) {
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: 'storyboard.html',
+          types: [{ description: 'HTML', accept: { 'text/html': ['.html'] } }]
+        });
+      }
+      const writable = await fileHandle.createWritable();
+      await writable.write(html);
+      await writable.close();
+      clearEditState();
+      return;
+    } catch (err) {
+      // User cancelled the picker, or API error — fall through to download
+      if (err.name === 'AbortError') return;
+    }
+  }
+
+  // Fallback: download (Firefox/Safari)
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = document.title.replace(/[^a-z0-9\s-]/gi, '').trim().replace(/\s+/g, '-').toLowerCase() + '.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  clearEditState();
+}
+</script>
+
+</body>
+</html>

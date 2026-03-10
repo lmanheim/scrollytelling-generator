@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- REPLACE: project title -->
+  <title>Project Title</title>
+  <!-- REPLACE: project fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;1,7..72,300;1,7..72,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      /* REPLACE: project palette */
+      --bg: #08080c;
+      --text: #e4ddd2;
+      --text-dim: #8a8478;
+      --text-faint: #4e4a42;
+      --gold: #c9a227;
+      --gold-light: #e3cc6b;
+      --gold-dim: rgba(201,162,39,0.12);
+      /* REPLACE: project typography */
+      --serif: 'Instrument Serif', Georgia, serif;
+      --body: 'Literata', Georgia, serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-weight: 300;
+      font-size: 18px;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    /* ── Progress bar ── */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      width: 0%;
+      z-index: 10000;
+      transition: width 0.12s ease-out;
+    }
+
+    /* ── Section indicator ── */
+    .section-ind {
+      position: fixed;
+      top: 1.5rem;
+      left: 2rem;
+      z-index: 100;
+      font-family: var(--body);
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .section-ind.visible { opacity: 1; }
+    .section-ind::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    /* ══════════════════════════════════════
+       BEAT: Text-only
+       ══════════════════════════════════════ */
+    .beat-text {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 4rem;
+      position: relative;
+    }
+
+    .beat-text::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(201,162,39,0.025), transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .beat-text-inner {
+      max-width: 620px;
+      text-align: center;
+      position: relative;
+    }
+
+    .display-text {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      line-height: 1.3;
+      margin-bottom: 2rem;
+      font-weight: 400;
+    }
+
+    .display-text em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .body-text {
+      font-size: 1.05rem;
+      color: var(--text-dim);
+      line-height: 1.9;
+      font-weight: 300;
+    }
+
+    .body-text em {
+      color: var(--gold-light);
+      font-style: italic;
+    }
+
+    .body-text + .body-text { margin-top: 1.25rem; }
+
+    /* Dramatic variant */
+    .beat-text.dramatic .display-text {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      color: var(--gold-light);
+      line-height: 1.2;
+      font-style: italic;
+      text-shadow: 0 0 80px rgba(201,162,39,0.15);
+    }
+
+    .beat-text.dramatic::before {
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(ellipse, rgba(201,162,39,0.04), transparent 70%);
+    }
+
+    /* Brief variant */
+    .beat-text.brief { min-height: 50vh; }
+    .beat-text.brief .display-text {
+      font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+      color: var(--text-dim);
+    }
+
+    /* Scroll hint (first beat only) */
+    .scroll-hint {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-faint);
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      animation: float 2.5s ease-in-out infinite;
+    }
+
+    .scroll-hint .line {
+      width: 1px;
+      height: 32px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* Gold rule */
+    .gold-rule {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      margin: 2rem auto;
+    }
+
+    /* ══════════════════════════════════════
+       BEAT: Full-screen slide
+       ══════════════════════════════════════ */
+    .beat-slide {
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .beat-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      padding: 3.5rem 1.5rem 1.5rem;
+    }
+
+    /* Vignette */
+    .beat-slide::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(8,8,12,0.45) 100%);
+      pointer-events: none;
+    }
+
+    /* Caption gradient */
+    .slide-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 3rem 3rem 2.5rem;
+      background: linear-gradient(to top, rgba(8,8,12,0.92) 0%, rgba(8,8,12,0.6) 60%, transparent 100%);
+      z-index: 2;
+    }
+
+    .slide-caption p {
+      max-width: 560px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    .slide-caption p em {
+      color: var(--gold-light);
+      font-style: italic;
+    }
+
+    .slide-caption .caption-small {
+      font-size: 0.8rem;
+      color: var(--text-faint);
+    }
+
+    /* Cinematic variant */
+    .beat-slide.cinematic img {
+      object-fit: cover;
+      padding: 0;
+      animation: kenBurns 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes kenBurns {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+
+    .beat-slide.cinematic .slide-caption p {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: rgba(228,221,210,0.5);
+      text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+    }
+
+    /* ══════════════════════════════════════
+       BEAT: Crossfade pair
+       ══════════════════════════════════════ */
+    .beat-crossfade {
+      height: 110vh;
+      position: relative;
+    }
+
+    .crossfade-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .crossfade-sticky img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 3.5rem 1.5rem 1.5rem;
+    }
+
+    .crossfade-from {
+      opacity: 0;
+      transform: scale(1.04);
+      transition: opacity 0.7s ease, transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .crossfade-to { opacity: 0; }
+
+    .beat-crossfade.vis .crossfade-from { opacity: 1; transform: scale(1); }
+
+    /* Vignette */
+    .crossfade-sticky::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(8,8,12,0.45) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Shared gradient bg */
+    .crossfade-caption-bg {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 140px;
+      background: linear-gradient(to top, rgba(8,8,12,0.92) 0%, rgba(8,8,12,0.6) 60%, transparent 100%);
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.7s ease 0.2s;
+    }
+
+    .beat-crossfade.vis .crossfade-caption-bg { opacity: 1; }
+
+    .crossfade-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 3rem 3rem 2.5rem;
+      z-index: 4;
+    }
+
+    .crossfade-caption p {
+      max-width: 560px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    .crossfade-caption p em {
+      color: var(--gold-light);
+      font-style: italic;
+    }
+
+    .crossfade-caption .caption-small {
+      font-size: 0.8rem;
+      color: var(--text-faint);
+    }
+
+    .crossfade-caption-from {
+      opacity: 0;
+      transition: opacity 0.6s ease 0.3s;
+    }
+
+    .beat-crossfade.vis .crossfade-caption-from { opacity: 1; }
+
+    .crossfade-caption-to { opacity: 0; }
+
+    /* ══════════════════════════════════════
+       BEAT: Triptych
+       ══════════════════════════════════════ */
+    .beat-triptych {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 3rem;
+    }
+
+    .triptych-inner {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .triptych-label {
+      font-family: var(--body);
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .triptych-label::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .triptych-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+    }
+
+    .triptych-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .triptych-image {
+      margin-bottom: 1.25rem;
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      transition: box-shadow 0.4s ease, transform 0.4s ease;
+    }
+
+    .triptych-card:hover .triptych-image {
+      box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+      transform: translateY(-3px);
+    }
+
+    .triptych-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .triptych-creator {
+      font-family: var(--body);
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+    }
+
+    .triptych-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.15rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .triptych-desc {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    /* ══════════════════════════════════════
+       BEAT: Split side-by-side
+       ══════════════════════════════════════ */
+    .beat-split-side {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 58% 42%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Shared split elements */
+    .split-image {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .split-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      padding: 2rem 0 2rem 1.5rem;
+      opacity: 0;
+      transform: scale(1.03);
+      transition: opacity 0.8s ease, transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .beat-split-side.vis .split-image img,
+    .beat-stacked.vis .split-image img { opacity: 1; transform: scale(1); }
+
+    /* Right-edge gradient */
+    .beat-split-side .split-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 80px;
+      background: linear-gradient(to right, transparent, var(--bg));
+      z-index: 2;
+    }
+
+    .split-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 3.5rem 4rem 2.5rem;
+      position: relative;
+    }
+
+    /* Vertical gold rule */
+    .beat-split-side .split-text::before {
+      content: '';
+      position: absolute;
+      top: 20%;
+      bottom: 20%;
+      left: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+      opacity: 0;
+      transition: opacity 0.8s ease 0.4s;
+    }
+
+    .beat-split-side.vis .split-text::before { opacity: 1; }
+
+    .split-label {
+      font-family: var(--body);
+      font-size: 0.55rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+    }
+
+    .beat-split-side.vis .split-label,
+    .beat-stacked.vis .split-label {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .split-label::before {
+      content: '';
+      width: 16px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .split-headline {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      line-height: 1.3;
+      margin-bottom: 1.75rem;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s;
+    }
+
+    .beat-split-side.vis .split-headline,
+    .beat-stacked.vis .split-headline {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .split-headline em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .split-body {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      line-height: 1.9;
+      font-weight: 300;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease 0.5s, transform 0.7s ease 0.5s;
+    }
+
+    .beat-split-side.vis .split-body,
+    .beat-stacked.vis .split-body {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .split-body em {
+      color: var(--gold-light);
+      font-style: italic;
+    }
+
+    .split-body + .split-body { margin-top: 1rem; }
+
+    .split-body .gold-rule {
+      margin: 1.5rem 0;
+    }
+
+    /* Reversed variant */
+    .beat-split-side.reversed {
+      grid-template-columns: 42% 58%;
+    }
+
+    .beat-split-side.reversed .split-image { order: 2; }
+    .beat-split-side.reversed .split-text { order: 1; padding: 4rem 2.5rem 4rem 3.5rem; }
+
+    .beat-split-side.reversed .split-image::after {
+      right: auto;
+      left: 0;
+      background: linear-gradient(to left, transparent, var(--bg));
+    }
+
+    .beat-split-side.reversed .split-text::before {
+      left: auto;
+      right: 0;
+    }
+
+    /* ══════════════════════════════════════
+       BEAT: Stacked
+       ══════════════════════════════════════ */
+    .beat-stacked {
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 65% 35%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .beat-stacked .split-image img {
+      padding: 2rem 0 0;
+    }
+
+    .beat-stacked .split-image {
+      box-shadow: inset 0 -40px 30px -20px var(--bg);
+    }
+
+    .beat-stacked .split-text {
+      padding: 1rem 3rem 2rem;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Horizontal gold rule */
+    .beat-stacked .split-text::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 25%;
+      right: 25%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+      opacity: 0;
+      transition: opacity 0.8s ease 0.4s;
+    }
+
+    .beat-stacked.vis .split-text::before { opacity: 1; }
+
+    .beat-stacked .split-label { justify-content: center; }
+    .beat-stacked .split-headline { text-align: center; max-width: 640px; }
+    .beat-stacked .split-body { text-align: center; max-width: 600px; }
+
+    /* ══════════════════════════════════════
+       Section break
+       ══════════════════════════════════════ */
+    .section-break {
+      height: 30vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-break-inner {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .section-break-line {
+      width: 40px;
+      height: 1px;
+      background: var(--gold-dim);
+    }
+
+    .section-break-num {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+
+    /* ══════════════════════════════════════
+       Reveal animations
+       ══════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.vis {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    /* Slide image + caption reveals */
+    .beat-slide img {
+      opacity: 0;
+      transform: scale(1.04);
+      transition: opacity 0.8s ease, transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .beat-slide.vis img { opacity: 1; transform: scale(1); }
+
+    /* Cinematic override */
+    .beat-slide.cinematic img {
+      transform: scale(1);
+    }
+    .beat-slide.cinematic.vis img {
+      transform: scale(1);
+    }
+
+    .slide-caption {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+    }
+
+    .beat-slide.vis .slide-caption {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ══════════════════════════════════════
+       Responsive
+       ══════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .beat-text { padding: 4rem 2rem; }
+      .beat-slide img { padding: 1rem; }
+      .slide-caption { padding: 2rem 1.5rem; }
+      .section-ind { display: none; }
+      .triptych-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .beat-triptych { padding: 4rem 2rem; }
+      .beat-split-side, .beat-split-side.reversed {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 100vh;
+      }
+      .beat-split-side .split-image { height: 45vh; }
+      .beat-split-side.reversed .split-image { order: 0; }
+      .beat-split-side.reversed .split-text { order: 0; }
+      .beat-split-side .split-text { padding: 2.5rem 2rem; }
+      .beat-split-side .split-text::before { display: none; }
+      .beat-split-side .split-image::after { display: none; }
+      .beat-stacked { grid-template-rows: 55% 45%; }
+      .beat-stacked .split-text { padding: 1rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<!-- REPLACE: initial section name -->
+<div class="section-ind" id="sectionInd">Section Name</div>
+
+<!-- ═══════════════════════════════════════════════
+     BEAT CONTENT GOES HERE
+
+     Build section by section from the approved storyboard.
+     Each beat maps to a storyboard card:
+
+     text-only / dramatic / brief → .beat-text (with variant class)
+     slide → .beat-slide
+     cinematic → .beat-slide.cinematic
+     crossfade → .beat-crossfade
+     triptych → .beat-triptych
+     split-side → .beat-split-side (or .reversed)
+     stacked → .beat-stacked
+     break → .section-break
+
+     See scripts/build.py for HTML output shapes per type.
+     ═══════════════════════════════════════════════ -->
+
+
+
+<script>
+(function() {
+  const progress = document.getElementById('progress');
+  const sectionInd = document.getElementById('sectionInd');
+
+  var scrollHint = document.querySelector('.scroll-hint');
+
+  function onScroll() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progress.style.width = pct + '%';
+
+    // Fade scroll hint as user begins scrolling
+    if (scrollHint) {
+      scrollHint.style.opacity = Math.max(0, 1 - scrollTop / (window.innerHeight * 0.25));
+    }
+
+    // Section indicator
+    const beats = document.querySelectorAll('[data-section]');
+    let currentSection = '';
+    beats.forEach(b => {
+      if (b.getBoundingClientRect().top < window.innerHeight * 0.5) {
+        currentSection = b.dataset.section;
+      }
+    });
+    if (currentSection && scrollTop > window.innerHeight * 0.5) {
+      sectionInd.textContent = currentSection;
+      sectionInd.classList.add('visible');
+    } else {
+      sectionInd.classList.remove('visible');
+    }
+
+    // Crossfade pairs
+    document.querySelectorAll('.beat-crossfade').forEach(function(cf) {
+      if (!cf.classList.contains('vis')) return;
+      var rect = cf.getBoundingClientRect();
+      var scrollable = cf.offsetHeight - window.innerHeight;
+      var prog = Math.max(0, Math.min(1, -rect.top / scrollable));
+
+      var toImg = cf.querySelector('.crossfade-to');
+      var fromCap = cf.querySelector('.crossfade-caption-from');
+      var toCap = cf.querySelector('.crossfade-caption-to');
+
+      // Crossfade across nearly the full scroll range
+      var fade = Math.max(0, Math.min(1, (prog - 0.05) / 0.9));
+      if (toImg) toImg.style.opacity = fade;
+      if (fromCap) fromCap.style.opacity = 1 - fade;
+      if (toCap) toCap.style.opacity = fade;
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Intersection Observer for text reveals
+  var revealObs = new IntersectionObserver(
+    function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) e.target.classList.add('vis');
+      });
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+  );
+  document.querySelectorAll('.reveal').forEach(function(el) { revealObs.observe(el); });
+
+  // Intersection Observer for beat-level reveals
+  var slideObs = new IntersectionObserver(
+    function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) e.target.classList.add('vis');
+      });
+    },
+    { threshold: 0.2 }
+  );
+  document.querySelectorAll('.beat-slide, .beat-crossfade, .beat-split-side, .beat-stacked').forEach(function(el) { slideObs.observe(el); });
+
+  onScroll();
+})();
+</script>
+
+</body>
+</html>
