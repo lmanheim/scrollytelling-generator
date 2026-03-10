@@ -2,13 +2,13 @@
 
 A Claude Code skill that converts presentations into scrollytelling HTML — editorial narrative woven through visual beats with intentional layout, pacing, and motion design.
 
-Give it a PPTX file. It reads every slide, analyzes the narrative structure, maps slides to layout patterns, and builds a self-contained HTML page where the presentation's story actually works as a reading experience.
+Give it a PPTX file. It reads every slide, analyzes the narrative structure, maps slides and presenter notes to scrollytelling layout patterns, and builds a self-contained HTML page where the presentation's story is transformed into a reading experience.
 
 ## What it does
 
 The skill runs in four phases, each producing artifacts the next phase consumes:
 
-1. **Discover** — Extracts slides and writes a structured narrative analysis (runs in a subagent to keep slide images out of your context window)
+1. **Discover** — Extracts slides and writes a structured narrative analysis
 2. **Explore** — Establishes a visual design system and maps slides to beat types (cinematic, crossfade, triptych, split, etc.)
 3. **Storyboard** — Plans every beat: layout type, editorial copy, sequence, and rationale. The storyboard is a collaborative planning tool you iterate on before building.
 4. **Build** — Generates production HTML from the approved storyboard using a deterministic build script
