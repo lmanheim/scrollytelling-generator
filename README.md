@@ -17,7 +17,7 @@ The skill runs in four phases, each producing artifacts the next phase consumes:
 
 ```bash
 # Clone into your Claude Code skills directory
-git clone https://github.com/YOUR_USERNAME/scrollytelling-generator.git \
+git clone https://github.com/lmanheim/scrollytelling-generator.git \
   ~/.claude/skills/scrollytelling-generator
 
 # Install dependencies
